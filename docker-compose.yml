@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  audio-converter:
+    build: .
+    volumes:
+      - ./input:/app/input
+      - ./output:/app/output
+      - ./processed:/app/processed
