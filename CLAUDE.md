@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a command-line audio conversion tool that converts WAV files to OGG format using Python and Poetry for package management. The application supports both single file conversion and batch processing of directories.
+This is a command-line audio conversion tool that converts WAV files to OGG format using Python and uv for package management. The application supports both single file conversion and batch processing of directories.
 
 ## Architecture
 
@@ -19,16 +19,16 @@ The project follows a modular CLI architecture:
 - `wav_to_ogg/cli.py`: Command-line interface and main entry point
 - `wav_to_ogg/converter.py`: AudioConverter class handling file/directory conversion
 - `wav_to_ogg/utils.py`: Utility functions for logging, validation, and file operations
-- `pyproject.toml`: Poetry configuration and project metadata
-- `poetry.lock`: Dependency lock file
+- `pyproject.toml`: Project metadata and dependencies (PEP 621, managed with uv)
+- `uv.lock`: Dependency lock file
 - `requirements.txt`: pip-compatible dependency list
 
 ## Development Commands
 
 ### Setup and Installation
 ```bash
-# Install dependencies with Poetry (recommended)
-poetry install
+# Install dependencies with uv (recommended)
+uv sync
 
 # Alternative: Install with pip
 pip install -r requirements.txt
@@ -53,26 +53,26 @@ wav-to-ogg --recursive /path/to/audio/
 ### Development Tools
 ```bash
 # Code formatting
-poetry run black wav_to_ogg/
+uv run black wav_to_ogg/
 
 # Import sorting
-poetry run isort wav_to_ogg/
+uv run isort wav_to_ogg/
 
 # Linting
-poetry run flake8 wav_to_ogg/
+uv run flake8 wav_to_ogg/
 
 # Type checking
-poetry run mypy wav_to_ogg/
+uv run mypy wav_to_ogg/
 
 # Run tests
-poetry run pytest
+uv run pytest
 
 # Run all quality checks
-poetry run black wav_to_ogg/ && poetry run isort wav_to_ogg/ && poetry run flake8 wav_to_ogg/ && poetry run mypy wav_to_ogg/
+uv run black wav_to_ogg/ && uv run isort wav_to_ogg/ && uv run flake8 wav_to_ogg/ && uv run mypy wav_to_ogg/
 ```
 
 ### Alternative Installation (pip-based)
-If Poetry is not available, use pip with the pre-generated requirements.txt:
+If uv is not available, use pip with the pre-generated requirements.txt:
 ```bash
 pip install -r requirements.txt
 pip install -e .
@@ -82,7 +82,7 @@ pip install -e .
 
 - The application converts files in-place (same directory as input) by default
 - Requires ffmpeg to be installed on the system for audio processing
-- Uses Poetry CLI script entry point defined in pyproject.toml
+- Uses a CLI script entry point defined in pyproject.toml, run via `uv run wav-to-ogg`
 - Supports both single file and batch directory processing
 - Error handling and logging integrated throughout the application
 - No longer uses Docker - runs directly on the host system

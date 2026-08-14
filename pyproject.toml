@@ -1,28 +1,36 @@
-[tool.poetry]
+[project]
 name = "wav-to-ogg"
 version = "0.1.0"
 description = "A command-line tool to convert WAV audio files to OGG format"
-authors = ["Your Name <your.email@example.com>"]
+authors = [{ name = "Your Name", email = "your.email@example.com" }]
 readme = "README.md"
-packages = [{include = "wav_to_ogg"}]
+requires-python = ">=3.8.1"
+dependencies = [
+    "pydub>=0.25.1,<0.26",
+    "audioop-lts>=0.2.1; python_version >= '3.13'",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.8.1"
-pydub = "^0.25.1"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.0.0"
-black = "^23.0.0"
-flake8 = "^6.0.0"
-mypy = "^1.0.0"
-isort = "^5.12.0"
-
-[tool.poetry.scripts]
+[project.scripts]
 wav-to-ogg = "wav_to_ogg.cli:main"
 
+[dependency-groups]
+dev = [
+    "pytest>=7.0.0,<8",
+    "black>=23.0.0,<24",
+    "flake8>=6.0.0,<7",
+    "mypy>=1.0.0,<2",
+    "isort>=5.12.0,<6",
+]
+
+[tool.uv]
+package = true
+
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["wav_to_ogg"]
 
 [tool.black]
 line-length = 88

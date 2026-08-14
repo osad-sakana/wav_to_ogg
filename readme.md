@@ -12,7 +12,7 @@ WAVファイルをOGG形式に変換するコマンドラインツールです�
 
 ## インストール方法
 
-### Poetry を使用する場合（推奨）
+### uv を使用する場合（推奨）
 
 ```bash
 # リポジトリをクローン
@@ -20,10 +20,10 @@ git clone <repository-url>
 cd wav_to_ogg
 
 # 依存関係をインストール
-poetry install
+uv sync
 
-# 仮想環境を有効化
-poetry shell
+# コマンドを実行（仮想環境を自動で使用）
+uv run wav-to-ogg --help
 ```
 
 ### pip を使用する場合
@@ -129,20 +129,17 @@ $ wav-to-ogg audio_directory/
 ### 開発環境のセットアップ
 
 ```bash
-# Poetry で開発依存関係をインストール
-poetry install
-
-# 仮想環境を有効化
-poetry shell
+# uv で開発依存関係をインストール
+uv sync
 
 # コードフォーマット
-poetry run black wav_to_ogg/
+uv run black wav_to_ogg/
 
 # リント
-poetry run flake8 wav_to_ogg/
+uv run flake8 wav_to_ogg/
 
 # テスト実行
-poetry run pytest
+uv run pytest
 ```
 
 ### プロジェクト構成
@@ -154,8 +151,8 @@ wav_to_ogg/
 │   ├── cli.py               # コマンドラインインターフェース
 │   ├── converter.py         # 音声変換機能
 │   └── utils.py             # ユーティリティ関数
-├── pyproject.toml           # Poetry設定とプロジェクトメタデータ
-├── poetry.lock              # 依存関係のロックファイル
+├── pyproject.toml           # プロジェクトメタデータと依存関係定義（uv管理）
+├── uv.lock                  # 依存関係のロックファイル
 ├── requirements.txt         # pip用依存関係リスト
 └── README.md                # このファイル
 ```
