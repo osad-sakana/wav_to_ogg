@@ -23,9 +23,7 @@ def create_parser() -> argparse.ArgumentParser:
         """,
     )
 
-    parser.add_argument(
-        "input", help="入力WAVファイルまたはWAVファイルを含むディレクトリ"
-    )
+    parser.add_argument("input", help="入力WAVファイルまたはWAVファイルを含むディレクトリ")
 
     parser.add_argument(
         "-o",
@@ -33,13 +31,9 @@ def create_parser() -> argparse.ArgumentParser:
         help="出力ファイルまたはディレクトリ（デフォルト：入力と同じ場所）",
     )
 
-    parser.add_argument(
-        "-r", "--recursive", action="store_true", help="ディレクトリを再帰的に処理"
-    )
+    parser.add_argument("-r", "--recursive", action="store_true", help="ディレクトリを再帰的に処理")
 
-    parser.add_argument(
-        "-v", "--verbose", action="store_true", help="詳細出力を有効化"
-    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="詳細出力を有効化")
 
     parser.add_argument("--version", action="version", version="%(prog)s 0.1.0")
 
