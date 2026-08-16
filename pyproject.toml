@@ -12,6 +12,12 @@ dependencies = [
 
 [project.scripts]
 wav-to-ogg = "wav_to_ogg.cli:main"
+wav-to-ogg-gui = "wav_to_ogg.gui.__main__:main"
+
+[project.optional-dependencies]
+gui = [
+    "tkinterdnd2>=0.6.2",
+]
 
 [dependency-groups]
 dev = [
@@ -56,7 +62,17 @@ strict_equality = true
 module = ["pydub", "pydub.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = ["tkinterdnd2", "tkinterdnd2.*"]
+ignore_missing_imports = true
+
 [tool.isort]
 profile = "black"
 multi_line_output = 3
 line_length = 88
+
+[tool.pytest.ini_options]
+markers = ["gui: GUIウィンドウの表示が必要なテスト"]
+
+[tool.coverage.run]
+omit = ["wav_to_ogg/gui/app.py", "wav_to_ogg/gui/__main__.py"]

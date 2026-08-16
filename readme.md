@@ -9,6 +9,7 @@ WAVファイルをOGG形式に変換するコマンドラインツールです�
 - 再帰的なディレクトリ処理（オプション）
 - 詳細なログ出力
 - エラーハンドリングと例外処理
+- ドラッグ&ドロップでファイルを追加できるGUI（オプション）
 
 ## インストール方法
 
@@ -26,6 +27,13 @@ uv sync
 uv run wav-to-ogg --help
 ```
 
+GUIを使う場合はオプション依存の`gui` extraを追加でインストールしてください。
+
+```bash
+uv sync --extra gui
+uv run wav-to-ogg-gui
+```
+
 ### pip を使用する場合
 
 ```bash
@@ -39,6 +47,8 @@ pip install -r requirements.txt
 # パッケージをインストール
 pip install -e .
 ```
+
+GUIを使う場合は代わりに `pip install -e .[gui]` を実行してください。
 
 ### システム要件
 
@@ -124,6 +134,24 @@ $ wav-to-ogg audio_directory/
 2024-01-15 10:31:22 - wav_to_ogg.cli - INFO - Successfully converted 2 files
 ```
 
+## GUI
+
+ドラッグ&ドロップでWAVファイルを追加し、OGG形式に変換できるGUIアプリケーションです。
+
+```bash
+uv sync --extra gui
+uv run wav-to-ogg-gui
+```
+
+- ウィンドウへファイルをドラッグ&ドロップするか、「ファイルを追加」ボタンから選択します（フォルダをドロップした場合は直下の`.wav`ファイルが追加されます）
+- 「変換」ボタンでOGGへの変換を開始します（変換はバックグラウンドで実行され、UIはブロックされません）
+- `tkinterdnd2`が未インストールの場合や、システムに`ffmpeg`が無い場合は起動時にエラー・警告メッセージが表示されます
+
+### システム要件（GUI）
+
+- `tkinter`（多くのPython配布に標準同梱。Debian/Ubuntuでは`sudo apt install python3-tk`が別途必要な場合があります）
+- `tkinterdnd2`（`uv sync --extra gui` または `pip install wav-to-ogg[gui]` でインストール）
+
 ## 開発
 
 ### 開発環境のセットアップ
@@ -150,7 +178,14 @@ wav_to_ogg/
 │   ├── __init__.py          # パッケージ初期化
 │   ├── cli.py               # コマンドラインインターフェース
 │   ├── converter.py         # 音声変換機能
-│   └── utils.py             # ユーティリティ関数
+│   ├── utils.py             # ユーティリティ関数
+│   └── gui/                 # ドラッグ&ドロップGUI（オプション機能）
+│       ├── __main__.py      # GUIエントリーポイント
+│       ├── app.py           # Tkinterビュー
+│       ├── dnd.py           # ドロップペイロード解析
+│       ├── model.py         # ファイルキューの状態
+│       ├── events.py        # 変換進捗イベント
+│       └── service.py       # バックグラウンド変換処理
 ├── pyproject.toml           # プロジェクトメタデータと依存関係定義（uv管理）
 ├── uv.lock                  # 依存関係のロックファイル
 ├── requirements.txt         # pip用依存関係リスト
