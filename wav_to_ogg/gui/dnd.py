@@ -1,27 +1,22 @@
-"""tkinterdnd2のドロップイベントペイロードを解析する純粋関数（tkinter非依存）"""
+"""tkinterdnd2のドロップイベントペイロードをパスへ変換する純粋関数（tkinter非依存）"""
 
-import re
 from pathlib import Path
-from typing import List
-
-_TOKEN_PATTERN = re.compile(r"\{([^}]*)\}|(\S+)")
+from typing import Iterable, List
 
 
-def parse_drop_payload(data: str) -> List[Path]:
+def paths_from_tokens(tokens: Iterable[str]) -> List[Path]:
     """
-    tkinterdnd2のドロップイベントデータをパスのリストに変換する
+    分割済みのトークン列をパスのリストに変換する
 
-    スペースを含むパスは波括弧で囲まれる（例: "{C:/a b/x.wav} /tmp/y.wav"）。
+    ドロップイベントのペイロードはTclのリスト形式（スペースを含むパスは
+    波括弧で囲まれ、`{`や`}`を含むパスはバックスラッシュでエスケープされる）
+    のため、トークンへの分割自体はTclのリストパーサ（`root.tk.splitlist()`）
+    に委ねること。この関数はその結果を受け取るだけの純粋関数とする。
 
     Args:
-        data: ドロップイベントの`event.data`文字列
+        tokens: `root.tk.splitlist(event.data)`などで分割済みの文字列群
 
     Returns:
-        List[Path]: ドロップされたパスのリスト
+        List[Path]: パスのリスト
     """
-    paths: List[Path] = []
-    for braced, bare in _TOKEN_PATTERN.findall(data):
-        token = braced if braced else bare
-        if token:
-            paths.append(Path(token))
-    return paths
+    return [Path(token) for token in tokens if token]

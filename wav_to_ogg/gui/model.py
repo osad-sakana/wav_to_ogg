@@ -24,9 +24,11 @@ class FileQueue:
             FileQueue: 追加後の新しいインスタンス
         """
         merged = list(self.paths)
+        seen = set(merged)
         for path in _expand_wav_files(candidates):
-            if path not in merged:
+            if path not in seen:
                 merged.append(path)
+                seen.add(path)
         return FileQueue(tuple(merged))
 
     def remove(self, path: Path) -> "FileQueue":
@@ -39,11 +41,22 @@ class FileQueue:
 
 
 def _expand_wav_files(candidates: Iterable[Path]) -> Tuple[Path, ...]:
-    """ディレクトリを直下のWAVファイルへ展開し、`.wav`以外を除外する"""
+    """
+    存在しないパスを除外しつつ、ディレクトリを直下のWAVファイルへ展開する
+
+    パスは`resolve()`で正規化してから判定するため、`..`を含む同一ファイルへの
+    異なる表記が別エントリとして重複排除をすり抜けることを防ぐ。
+    """
     expanded = []
     for candidate in candidates:
-        if candidate.is_dir():
-            expanded.extend(sorted(candidate.glob("*.wav")))
-        elif candidate.suffix.lower() == ".wav":
-            expanded.append(candidate)
+        resolved = candidate.resolve()
+        if resolved.is_dir():
+            wav_files = (
+                p
+                for p in resolved.iterdir()
+                if p.is_file() and p.suffix.lower() == ".wav"
+            )
+            expanded.extend(sorted(wav_files))
+        elif resolved.is_file() and resolved.suffix.lower() == ".wav":
+            expanded.append(resolved)
     return tuple(expanded)

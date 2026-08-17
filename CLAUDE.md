@@ -20,11 +20,12 @@ The project follows a modular CLI architecture, with an optional GUI presentatio
 - `wav_to_ogg/cli.py`: Command-line interface and main entry point
 - `wav_to_ogg/converter.py`: AudioConverter class handling file/directory conversion
 - `wav_to_ogg/utils.py`: Utility functions for logging, validation, and file operations
-- `wav_to_ogg/gui/dnd.py`: Parses tkinterdnd2 drop event payloads into paths (no tkinter dependency)
-- `wav_to_ogg/gui/model.py`: Immutable `FileQueue` state for the file list (no tkinter dependency)
+- `wav_to_ogg/gui/dnd.py`: Converts drop-event tokens (already split by Tk's `splitlist`) into paths (no tkinter dependency)
+- `wav_to_ogg/gui/model.py`: Immutable `FileQueue` state for the file list; validates/resolves paths and expands directories (no tkinter dependency)
 - `wav_to_ogg/gui/events.py`: Conversion progress event dataclasses (no tkinter dependency)
-- `wav_to_ogg/gui/service.py`: `ConversionService` runs `AudioConverter` on a background thread and reports progress via a queue (no tkinter dependency)
-- `wav_to_ogg/gui/app.py`: Tkinter view (`WavToOggApp`) — widgets and event wiring only, no business logic
+- `wav_to_ogg/gui/service.py`: `ConversionService` runs `AudioConverter` on a background thread and reports progress via a queue; tolerates unexpected exceptions and supports cooperative cancellation (no tkinter dependency)
+- `wav_to_ogg/gui/presenter.py`: Summarizes `ConversionService` events (failed paths, completion) for the view to render (no tkinter dependency)
+- `wav_to_ogg/gui/app.py`: Tkinter view (`WavToOggApp`) — widgets and event wiring only, delegates parsing/summarizing to the modules above
 - `wav_to_ogg/gui/__main__.py`: GUI entry point (`wav-to-ogg-gui`), handles missing `tkinterdnd2`/`ffmpeg` gracefully
 - `pyproject.toml`: Project metadata and dependencies (PEP 621, managed with uv)
 - `uv.lock`: Dependency lock file
@@ -111,9 +112,9 @@ The application follows a three-layer architecture:
 
 ### GUI Design Pattern
 The GUI mirrors the same separation, keeping tkinter isolated from logic so most of it is unit-testable:
-1. **View Layer** (`gui/app.py`, `gui/__main__.py`): Tkinter widgets, drag-and-drop wiring, entry point — no business logic
-2. **Logic Layer** (`gui/dnd.py`, `gui/model.py`, `gui/events.py`, `gui/service.py`): Pure Python, no tkinter import, fully covered by `tests/unit/`
-3. Conversion runs on a background `threading.Thread` via `ConversionService`; the Tk main loop polls a `queue.Queue` with `root.after()` so the UI never blocks and Tk widgets are only touched from the main thread
+1. **View Layer** (`gui/app.py`, `gui/__main__.py`): Tkinter widgets, drag-and-drop wiring, entry point — no business logic. Excluded from coverage measurement (`[tool.coverage.run] omit`) since it cannot be meaningfully exercised without a real display; verified instead by `tests/integration/test_gui_smoke.py` and manual `wav-to-ogg-gui` launches
+2. **Logic Layer** (`gui/dnd.py`, `gui/model.py`, `gui/events.py`, `gui/service.py`, `gui/presenter.py`): Pure Python, no tkinter import, fully covered by `tests/unit/`
+3. Conversion runs on a background `threading.Thread` via `ConversionService`; the Tk main loop polls a `queue.Queue` with `root.after()` so the UI never blocks and Tk widgets are only touched from the main thread. Exceptions from `AudioConverter.convert_file` are caught per-file so a `ConversionFinished` event is always emitted (prevents the GUI from hanging). `ConversionService.stop()` requests cooperative cancellation before the next unstarted file — an in-flight file is always allowed to finish so no truncated `.ogg` is left behind
 
 ### Error Handling Strategy
 - Path validation occurs at the CLI layer using `validate_input_path()`

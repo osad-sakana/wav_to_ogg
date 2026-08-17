@@ -22,18 +22,22 @@ def main() -> int:
     except ImportError:
         logger.error(
             "GUIの実行にはtkinter/tkinterdnd2が必要です。"
-            "`pip install wav-to-ogg[gui]` を実行してください。"
+            '`uv sync --extra gui` または `pip install -e ".[gui]"` を実行してください。'
         )
         return 1
-
-    if shutil.which("ffmpeg") is None:
-        logger.warning("ffmpegが見つかりません。変換にはffmpegのインストールが必要です。")
 
     try:
         root = TkinterDnD.Tk()
     except Exception as e:
         logger.error(f"GUIの起動に失敗しました（Tkinterの初期化エラー）: {e}")
         return 1
+
+    if shutil.which("ffmpeg") is None:
+        message = "ffmpegが見つかりません。変換にはffmpegのインストールが必要です。"
+        logger.warning(message)
+        from tkinter import messagebox
+
+        messagebox.showwarning("WAV to OGG", message)
 
     from .app import WavToOggApp
 

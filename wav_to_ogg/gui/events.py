@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Union
 
 
 @dataclass(frozen=True)
@@ -25,3 +26,6 @@ class ConversionFinished:
 
     converted_count: int
     failed_count: int
+
+
+ConversionEvent = Union[FileConverted, FileFailed, ConversionFinished]

@@ -185,7 +185,8 @@ wav_to_ogg/
 │       ├── dnd.py           # ドロップペイロード解析
 │       ├── model.py         # ファイルキューの状態
 │       ├── events.py        # 変換進捗イベント
-│       └── service.py       # バックグラウンド変換処理
+│       ├── service.py       # バックグラウンド変換処理
+│       └── presenter.py     # 進捗イベントの表示用サマリー
 ├── pyproject.toml           # プロジェクトメタデータと依存関係定義（uv管理）
 ├── uv.lock                  # 依存関係のロックファイル
 ├── requirements.txt         # pip用依存関係リスト
